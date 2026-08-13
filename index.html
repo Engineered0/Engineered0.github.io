@@ -43,6 +43,7 @@ body{
   margin:0;background:var(--paper);color:var(--ink);
   font-family:var(--gothic);font-size:clamp(15px,1.02vw,16.5px);line-height:1.75;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  padding-bottom:38px;
 }
 ::selection{background:var(--ink);color:var(--paper)}
 img,svg{display:block;max-width:100%}
@@ -73,9 +74,15 @@ a{color:inherit}
 /* chapter rule */
 .chapter{
   display:flex;align-items:baseline;gap:clamp(12px,2.4vw,26px);
-  border-bottom:3px solid var(--ink);
   padding-bottom:10px;margin-bottom:clamp(30px,5vh,58px);
+  position:relative;
 }
+.chapter::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--ink);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 1s cubic-bezier(.2,.8,.25,1);
+}
+.sec.in .chapter::after{transform:scaleX(1)}
 .chapter-no{
   font-family:var(--mono);font-size:.68rem;letter-spacing:.2em;
   writing-mode:horizontal-tb;white-space:nowrap;padding-bottom:6px;
@@ -83,14 +90,63 @@ a{color:inherit}
 .chapter-name{
   font-family:var(--mincho);font-weight:800;
   font-size:clamp(1.7rem,5.4vw,3.4rem);line-height:1;letter-spacing:-.01em;margin:0;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .7s ease .12s,transform .7s cubic-bezier(.2,.8,.25,1) .12s;
 }
+.sec.in .chapter-name{opacity:1;transform:none}
 .chapter-jp{
-  font-family:var(--mincho);font-weight:600;font-size:.9rem;color:var(--tone);
-  margin-left:auto;padding-bottom:8px;white-space:nowrap;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#5c564c;
+  margin-left:auto;padding-bottom:9px;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
+  opacity:0;transition:opacity .6s ease .5s;
 }
+.sec.in .chapter-jp{opacity:1}
 @media (max-width:640px){ .chapter-jp{display:none} }
 
+.led{width:8px;height:8px;border-radius:50%;background:var(--cyan);flex:none;
+  animation:ledblink 1.7s steps(1,end) infinite}
+@keyframes ledblink{0%,58%{opacity:1}59%,100%{opacity:.16}}
+
 .sec{padding-block:clamp(64px,11vh,140px)}
+
+/* ==========================================================
+   BOOT — the station coming online
+   ========================================================== */
+.boot{
+  position:fixed;inset:0;z-index:300;background:var(--ink);color:var(--paper);
+  display:grid;place-content:center;justify-items:start;
+  gap:7px;padding:var(--pad);font-family:var(--mono);
+  font-size:clamp(.62rem,1.5vw,.78rem);letter-spacing:.2em;text-transform:uppercase;
+}
+.boot b{display:block;font-weight:500;letter-spacing:.34em;margin-bottom:14px;color:var(--cyan-lt)}
+.boot span{opacity:0;animation:bootline .01s linear forwards}
+.boot span:nth-child(2){animation-delay:.18s}
+.boot span:nth-child(3){animation-delay:.44s}
+.boot span:nth-child(4){animation-delay:.70s}
+.boot span:nth-child(5){animation-delay:.96s}
+.boot span:nth-child(6){animation-delay:1.20s;color:var(--cyan-lt)}
+@keyframes bootline{to{opacity:1}}
+.boot.done{animation:bootout .55s cubic-bezier(.7,0,.25,1) forwards}
+@keyframes bootout{to{clip-path:inset(0 0 100% 0)}}
+
+/* ==========================================================
+   HUD — the line status strip, pinned
+   ========================================================== */
+.hud{
+  position:fixed;left:0;right:0;bottom:0;z-index:80;
+  background:var(--paper);border-top:3px solid var(--ink);
+  display:flex;align-items:center;gap:clamp(9px,2.2vw,26px);
+  padding:8px clamp(12px,3vw,26px);
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  transform:translateY(105%);transition:transform .5s cubic-bezier(.2,.8,.25,1) .2s;
+}
+.hud.up{transform:none}
+.hud-grp{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.hud-bar{flex:1;min-width:44px;height:9px;border:2px solid var(--ink);position:relative;overflow:hidden}
+.hud-bar i{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--cyan);
+  transform:scaleX(0);transform-origin:left}
+.hud b{font-weight:500}
+@media (max-width:720px){ .hud-hide{display:none} .hud{font-size:.54rem;gap:10px} }
 
 /* ==========================================================
    HERO — sticky night panel, scrubbed
@@ -137,6 +193,14 @@ a{color:inherit}
 .cue span{display:inline-block;animation:nudge 2.2s ease-in-out infinite}
 @keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 
+/* ambient screen life */
+#logScroll{animation:logrun 9s linear infinite}
+@keyframes logrun{to{transform:translateY(-150px)}}
+#scanL{animation:scanl 3.4s linear infinite}
+@keyframes scanl{from{transform:translateY(-8px)}to{transform:translateY(190px)}}
+#flick{animation:flick 6.5s steps(1,end) infinite}
+@keyframes flick{0%,96%{opacity:0}97%{opacity:.09}98%{opacity:0}99%{opacity:.06}100%{opacity:0}}
+
 /* ==========================================================
    CHAPTER 01 — the commissioning sequence
    ========================================================== */
@@ -151,6 +215,13 @@ a{color:inherit}
 .rig-frame svg{width:100%;height:100%}
 .rig-frame.up{background:var(--paper)}
 
+#fanBg{transform-box:view-box;transform-origin:82px 74px;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#bgBelt{animation:bgbelt 5.5s linear infinite}
+@keyframes bgbelt{to{transform:translateX(190px)}}
+#gantryBg{animation:gantry 14s ease-in-out infinite alternate}
+@keyframes gantry{to{transform:translateX(210px)}}
+
 .beat{display:flex;gap:clamp(12px,2.4vw,26px);align-items:flex-start;justify-content:space-between}
 .beat-l{display:flex;gap:14px;align-items:baseline;min-width:0}
 .beat-no{font-family:var(--mono);font-size:1.2rem;letter-spacing:-.02em}
@@ -163,6 +234,127 @@ a{color:inherit}
 @media (max-width:760px){ .beat-ticks{display:none} }
 
 /* ==========================================================
+   INTERLUDE — the floor
+   ========================================================== */
+.floor{padding-block:clamp(50px,8vh,110px) 0}
+.floor-stage{position:relative}
+.ticker + .sec,.belt + .sec{padding-top:clamp(40px,7vh,86px)}
+.floor-head{display:flex;align-items:baseline;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.floor-head .mono{color:#5c564c}
+.floor-head h2{font-family:var(--mincho);font-weight:800;margin:0;
+  font-size:clamp(1.4rem,3.6vw,2.3rem);line-height:1}
+.floor-frame{
+  position:relative;border:3px solid var(--ink);background:var(--paper);
+  box-shadow:8px 8px 0 var(--ink);overflow:hidden;aspect-ratio:1400/380;
+}
+.floor-frame svg{width:100%;height:100%}
+.floor-cap{position:absolute;bottom:12px;left:12px;max-width:30ch;
+  box-shadow:4px 4px 0 var(--ink)}
+.floor-swipe{display:none;margin-top:10px;color:#5c564c}
+@media (max-width:760px){
+  .floor-frame{aspect-ratio:auto;height:296px;overflow-x:auto;overscroll-behavior-x:contain}
+  .floor-frame svg{width:1080px;min-width:1080px;height:100%}
+  .floor-cap{position:static;max-width:none;margin-top:14px;box-shadow:5px 5px 0 var(--ink)}
+  .floor-swipe{display:block}
+}
+
+/* machinery motion */
+#fanF{transform-box:view-box;transform-origin:90px 120px;animation:spin 2.4s linear infinite}
+.armA{transform-box:view-box;transform-origin:300px 262px;animation:swingA 4.6s ease-in-out infinite}
+.armA2{transform-box:view-box;transform-origin:300px 176px;animation:swingA2 4.6s ease-in-out infinite}
+@keyframes swingA{0%,100%{transform:rotate(-11deg)}50%{transform:rotate(13deg)}}
+@keyframes swingA2{0%,100%{transform:rotate(16deg)}50%{transform:rotate(-20deg)}}
+.armB{transform-box:view-box;transform-origin:540px 262px;animation:swingB 5.8s ease-in-out infinite}
+.armB2{transform-box:view-box;transform-origin:540px 176px;animation:swingB2 5.8s ease-in-out infinite}
+@keyframes swingB{0%,100%{transform:rotate(22deg)}44%{transform:rotate(-16deg)}}
+@keyframes swingB2{0%,100%{transform:rotate(-26deg)}44%{transform:rotate(18deg)}}
+#sparks{animation:sparks 4.6s steps(1,end) infinite}
+@keyframes sparks{0%,42%{opacity:0}44%{opacity:1}46%{opacity:.3}48%{opacity:1}54%{opacity:0}100%{opacity:0}}
+#sfxWeld{transform-box:view-box;transform-origin:416px 142px;animation:sfxweld 4.6s ease-out infinite}
+@keyframes sfxweld{0%,42%{opacity:0;transform:scale(.6) rotate(-8deg)}
+  50%{opacity:1;transform:scale(1) rotate(-8deg)}64%{opacity:0;transform:scale(1.1) rotate(-8deg)}100%{opacity:0}}
+#beltSlats{animation:slatrun .62s linear infinite}
+@keyframes slatrun{to{transform:translateX(22px)}}
+#rollA,#rollB{transform-box:view-box;animation:spin 1.1s linear infinite}
+#rollA{transform-origin:660px 250px}
+#rollB{transform-origin:1100px 250px}
+.cpart{animation:convrun 7s linear infinite}
+@keyframes convrun{from{transform:translateX(0)}to{transform:translateX(560px)}}
+.cpart:nth-of-type(2){animation-delay:-1.75s}
+.cpart:nth-of-type(3){animation-delay:-3.5s}
+.cpart:nth-of-type(4){animation-delay:-5.25s}
+#insBeam{animation:insbeam 1.75s ease-in-out infinite}
+@keyframes insbeam{0%,55%{opacity:.10}70%{opacity:.5}100%{opacity:.10}}
+#insRead{animation:insread 1.75s steps(1,end) infinite}
+@keyframes insread{0%,62%{opacity:.25}64%,92%{opacity:1}93%,100%{opacity:.25}}
+#insBox{animation:insbox 1.75s steps(1,end) infinite}
+@keyframes insbox{0%,60%{opacity:0}62%,90%{opacity:1}91%,100%{opacity:0}}
+#ram{animation:ram 2.6s cubic-bezier(.5,0,.2,1) infinite}
+@keyframes ram{0%,22%{transform:translateY(0)}40%,50%{transform:translateY(38px)}72%,100%{transform:translateY(0)}}
+#press-flash{animation:pflash 2.6s steps(1,end) infinite}
+@keyframes pflash{0%,39%{opacity:0}41%,47%{opacity:1}48%,100%{opacity:0}}
+#sfxPress{transform-box:view-box;transform-origin:1218px 150px;animation:sfxpress 2.6s ease-out infinite}
+@keyframes sfxpress{0%,38%{opacity:0;transform:scale(.55) rotate(6deg)}
+  46%{opacity:1;transform:scale(1.06) rotate(6deg)}52%{opacity:1;transform:scale(1) rotate(6deg)}
+  70%{opacity:0;transform:scale(1) rotate(6deg)}100%{opacity:0}}
+#agv{animation:agv 26s linear infinite}
+@keyframes agv{from{transform:translateX(-220px)}to{transform:translateX(1500px)}}
+.wheel{transform-box:view-box;animation:spin 1.2s linear infinite}
+.lamp{animation:lampsway 6.4s ease-in-out infinite}
+.lamp1{transform-box:view-box;transform-origin:200px 80px}
+.lamp2{transform-box:view-box;transform-origin:700px 80px;animation-delay:-2.1s}
+.lamp3{transform-box:view-box;transform-origin:1330px 80px;animation-delay:-4.3s}
+@keyframes lampsway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+#vent{animation:vent 5s ease-out infinite}
+@keyframes vent{0%{opacity:0;transform:translateY(0) scale(.7)}
+  25%{opacity:.5}100%{opacity:0;transform:translateY(-72px) scale(1.5)}}
+#opTablet{transform-box:view-box;transform-origin:1338px 232px;animation:optap 3.2s ease-in-out infinite}
+@keyframes optap{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+
+/* ==========================================================
+   BELT DIVIDER + TICKER
+   ========================================================== */
+.belt{
+  position:relative;height:72px;overflow:hidden;background:var(--paper-2);
+  border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);
+  margin-block:clamp(28px,6vh,64px);
+}
+.belt::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0 20px,rgba(21,18,15,.26) 20px 22px);
+  animation:beltrun 1.05s linear infinite;
+}
+@keyframes beltrun{to{background-position:22px 0}}
+.belt i{
+  position:absolute;top:50%;left:0;width:58px;height:32px;
+  border:2.6px solid var(--ink);background:var(--paper);
+  animation:beltpart 11s linear infinite;
+}
+.belt i::after{
+  content:"";position:absolute;top:50%;left:9px;width:9px;height:9px;margin-top:-4.5px;
+  border:2px solid var(--ink);border-radius:50%;
+}
+.belt i:nth-child(2){animation-delay:-2.7s;width:38px}
+.belt i:nth-child(3){animation-delay:-5.5s;border-radius:50%;width:34px;height:34px}
+.belt i:nth-child(3)::after{display:none}
+.belt i:nth-child(4){animation-delay:-8.2s;width:66px}
+@keyframes beltpart{
+  from{transform:translate3d(-90px,-50%,0)}
+  to{transform:translate3d(calc(100vw + 90px),-50%,0)}
+}
+
+.ticker{
+  border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);
+  background:var(--ink);color:var(--paper);overflow:hidden;padding:10px 0;
+  margin-block:clamp(28px,6vh,64px);
+}
+.ticker div{display:flex;width:max-content;animation:tick 34s linear infinite}
+@keyframes tick{to{transform:translateX(-50%)}}
+.ticker p{margin:0;display:flex;gap:44px;padding-right:44px;
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.22em;text-transform:uppercase;white-space:nowrap}
+.ticker em{font-style:normal;color:var(--cyan-lt)}
+
+/* ==========================================================
    CHAPTER 02 — where I've worked
    ========================================================== */
 .post{
@@ -170,7 +362,11 @@ a{color:inherit}
   border:3px solid var(--ink);background:var(--paper);
   padding:clamp(20px,3vw,34px);margin-bottom:clamp(20px,3.2vh,34px);
   box-shadow:6px 6px 0 var(--ink);
+  position:relative;overflow:hidden;
+  transition:transform .3s cubic-bezier(.2,.8,.25,1),box-shadow .3s cubic-bezier(.2,.8,.25,1),
+             opacity .7s ease,translate .7s cubic-bezier(.2,.8,.25,1);
 }
+.post:hover{transform:translate(-3px,-3px);box-shadow:11px 11px 0 var(--ink)}
 .post-art{width:132px;height:132px;border:2.5px solid var(--ink);background:var(--paper-2)}
 .post-when{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;color:#5c564c;margin-bottom:6px}
 .post-role{font-family:var(--mincho);font-weight:800;font-size:clamp(1.2rem,2.7vw,1.85rem);
@@ -179,11 +375,58 @@ a{color:inherit}
 .post-body{margin:12px 0 0;max-width:62ch}
 .post-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
 .post-tags span{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
-  border:1.5px solid var(--ink);padding:3px 8px}
+  border:1.5px solid var(--ink);padding:3px 8px;transition:background-color .2s,color .2s}
+.post:hover .post-tags span{background:var(--ink);color:var(--paper)}
 @media (max-width:700px){
   .post{grid-template-columns:1fr}
   .post-art{width:100px;height:100px}
 }
+
+/* pointer reticle — a vision tool following the cursor */
+.retic{
+  position:absolute;width:86px;height:60px;left:0;top:0;pointer-events:none;
+  opacity:0;transition:opacity .22s;
+  translate:calc(var(--mx,0px) - 43px) calc(var(--my,0px) - 30px);
+}
+.post:hover .retic{opacity:1}
+.retic span{position:absolute;width:15px;height:15px;border:2.4px solid var(--cyan)}
+.retic span:nth-child(1){top:0;left:0;border-right:0;border-bottom:0}
+.retic span:nth-child(2){top:0;right:0;border-left:0;border-bottom:0}
+.retic span:nth-child(3){bottom:0;left:0;border-right:0;border-top:0}
+.retic span:nth-child(4){bottom:0;right:0;border-left:0;border-top:0}
+@media (hover:none){ .retic{display:none} }
+
+/* card artwork motion — runs when the card is on screen */
+.post-art g{transform-box:view-box}
+.a1-cam{animation:a1cam 5.4s ease-in-out infinite}
+@keyframes a1cam{0%,100%{transform:translateX(-19px)}50%{transform:translateX(19px)}}
+.a1-beam{animation:a1beam 5.4s ease-in-out infinite}
+@keyframes a1beam{0%,100%{opacity:.10}50%{opacity:.4}}
+.a1-parts{animation:a1parts 6s linear infinite}
+@keyframes a1parts{from{transform:translateX(-24px)}to{transform:translateX(74px)}}
+.a1-slats{animation:a1slats .8s linear infinite}
+@keyframes a1slats{to{transform:translateX(8px)}}
+.a2-cells{animation:a2cells 5.2s linear infinite}
+@keyframes a2cells{from{transform:translateX(-26px)}to{transform:translateX(52px)}}
+.a2-scan{animation:a2scan 2.6s ease-in-out infinite}
+@keyframes a2scan{0%{transform:translateY(0)}50%{transform:translateY(38px)}100%{transform:translateY(0)}}
+.a2-flag{animation:a2flag 5.2s steps(1,end) infinite}
+@keyframes a2flag{0%,54%{opacity:0}56%,74%{opacity:1}75%,100%{opacity:0}}
+.a3-gear{transform-origin:44px 46px;animation:spin 7s linear infinite}
+.a3-gear2{transform-origin:72px 70px;animation:spinr 4.6s linear infinite}
+@keyframes spinr{to{transform:rotate(-360deg)}}
+.a3-jaw{animation:a3jaw 3.4s ease-in-out infinite}
+@keyframes a3jaw{0%,100%{transform:translateX(0)}50%{transform:translateX(-11px)}}
+.a4-pulse circle{animation:a4pulse 2.8s ease-out infinite}
+.a4-pulse circle:nth-child(2){animation-delay:-.93s}
+.a4-pulse circle:nth-child(3){animation-delay:-1.86s}
+@keyframes a4pulse{0%{opacity:.55;r:6}100%{opacity:0;r:34}}
+.a4-rows path{animation:a4rows 1.9s steps(1,end) infinite}
+.a4-rows path:nth-child(2){animation-delay:-.63s}
+.a4-rows path:nth-child(3){animation-delay:-1.26s}
+@keyframes a4rows{0%,49%{opacity:.25}50%,100%{opacity:1}}
+.post-art:not(.running) *{animation-play-state:paused}
+.floor-frame:not(.running) *{animation-play-state:paused}
 
 /* ==========================================================
    CHAPTER 03 — profile page
@@ -194,12 +437,27 @@ a{color:inherit}
 .stat dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:9px 14px;align-items:baseline}
 .stat dt{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#5c564c}
 .stat dd{margin:0;font-family:var(--mincho);font-weight:700;font-size:1rem;line-height:1.3}
+.stat dd.tick{font-family:var(--mono);font-size:.92rem;letter-spacing:.08em}
 .kit{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:clamp(14px,2vw,22px)}
-.kit section{border:2.5px solid var(--ink);padding:18px 20px 20px;background:var(--paper)}
+.kit section{border:2.5px solid var(--ink);padding:18px 20px 20px;background:var(--paper);
+  position:relative;overflow:hidden}
+.kit section::before{
+  content:"";position:absolute;left:0;right:0;height:38%;top:-45%;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(13,122,139,.34),rgba(13,122,139,0));opacity:0;
+}
+.kit section.in::before{animation:sweep 1.4s ease-out .25s 1}
+@keyframes sweep{0%{top:-45%;opacity:1}100%{top:112%;opacity:0}}
 .kit h3{font-family:var(--mono);font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;
   margin:0 0 12px;font-weight:500;color:var(--cyan)}
 .kit ul{margin:0;padding:0;list-style:none}
-.kit li{padding:5px 0;border-bottom:1px dotted var(--tone);font-size:.92rem}
+.kit li{padding:5px 0;border-bottom:1px dotted var(--tone);font-size:.92rem;
+  opacity:0;transform:translateX(-10px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.25,1)}
+.kit section.in li{opacity:1;transform:none}
+.kit section.in li:nth-child(1){transition-delay:.30s}
+.kit section.in li:nth-child(2){transition-delay:.38s}
+.kit section.in li:nth-child(3){transition-delay:.46s}
+.kit section.in li:nth-child(4){transition-delay:.54s}
+.kit section.in li:nth-child(5){transition-delay:.62s}
 .kit li:last-child{border-bottom:0}
 @media (max-width:820px){ .profile{grid-template-columns:1fr} }
 
@@ -208,35 +466,71 @@ a{color:inherit}
    ========================================================== */
 .end{border:3px solid var(--ink);background:var(--paper);box-shadow:8px 8px 0 var(--ink);
   padding:clamp(24px,4.4vw,54px);display:grid;grid-template-columns:1fr auto;
-  gap:clamp(22px,4vw,48px);align-items:center}
+  gap:clamp(22px,4vw,48px);align-items:center;position:relative;overflow:hidden}
 .end p{font-family:var(--mincho);font-weight:700;font-size:clamp(1.1rem,2.4vw,1.55rem);
   line-height:1.5;margin:0 0 22px;max-width:34ch}
 .links{display:flex;flex-wrap:wrap;gap:8px 30px}
 .links a,.links span{font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;text-decoration:none;
   border-bottom:2px solid var(--tone);padding-bottom:2px;transition:border-color .2s,color .2s}
 .links a:hover,.links a:focus-visible{border-bottom-color:var(--seal);color:var(--seal)}
-.seal{width:clamp(108px,15vw,158px);height:clamp(108px,15vw,158px);flex:none;justify-self:end}
-@media (max-width:700px){ .end{grid-template-columns:1fr} .seal{justify-self:start} }
+.seal-wrap{position:relative;width:clamp(108px,15vw,158px);height:clamp(108px,15vw,158px);
+  flex:none;justify-self:end}
+.seal{width:100%;height:100%;opacity:0}
+.end.in .seal{animation:stamp .5s cubic-bezier(.25,1.4,.4,1) .45s forwards}
+@keyframes stamp{
+  0%{opacity:0;transform:scale(2.5) rotate(-18deg)}
+  55%{opacity:1;transform:scale(.9) rotate(4deg)}
+  100%{opacity:1;transform:scale(1) rotate(-4deg)}
+}
+.impact{position:absolute;inset:-40%;opacity:0;pointer-events:none}
+.end.in .impact{animation:impact .55s ease-out .5s 1}
+@keyframes impact{0%{opacity:0;transform:scale(.4)}25%{opacity:.85}100%{opacity:0;transform:scale(1.25)}}
+@media (max-width:700px){ .end{grid-template-columns:1fr} .seal-wrap{justify-self:start} }
 
 footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:18px 0 44px;
   display:flex;flex-wrap:wrap;gap:6px 26px;justify-content:space-between;color:#5c564c}
 
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.3,1)}
-.in .reveal{opacity:1;transform:none}
-.in .reveal:nth-of-type(2){transition-delay:.07s}
-.in .reveal:nth-of-type(3){transition-delay:.14s}
-.in .reveal:nth-of-type(4){transition-delay:.21s}
+.reveal{opacity:0;transform:translateY(20px);
+  transition:opacity .65s ease,transform .65s cubic-bezier(.2,.75,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.post.reveal{transform:translateY(26px) rotate(-.7deg)}
+.post.reveal.in{transform:none}
 
 :focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
 
 @media (prefers-reduced-motion:reduce){
-  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important}
   .reveal{opacity:1;transform:none}
   .caps .cap,.byline{opacity:1 !important;transform:none !important}
+  .boot{display:none}
+  .seal{opacity:1}
+  .kit li{opacity:1;transform:none}
+  .chapter-name,.chapter-jp{opacity:1;transform:none}
+  .chapter::after{transform:scaleX(1)}
 }
 </style>
 </head>
 <body>
+
+<!-- ================= BOOT ================= -->
+<div class="boot" id="boot" aria-hidden="true">
+  <b>Station 01 · Windsor</b>
+  <span>Cam 01 ······················ link</span>
+  <span>Lens 16 mm ················ locked</span>
+  <span>Bar light ···················· on</span>
+  <span>Calibration ················ loaded</span>
+  <span>Line ······················· running</span>
+</div>
+
+<!-- ================= HUD ================= -->
+<div class="hud" id="hud" aria-hidden="true">
+  <span class="hud-grp"><i class="led"></i> Line 01 running</span>
+  <span class="hud-grp hud-hide">Takt <b id="hudTakt">4.2 s</b></span>
+  <span class="hud-bar"><i id="hudFill"></i></span>
+  <span class="hud-grp"><b id="hudPct">00</b>%</span>
+  <span class="hud-grp hud-hide">Units <b id="hudUnits">001284</b></span>
+</div>
 
 <!-- ================= HERO ================= -->
 <section class="hero" id="hero" aria-label="Late night at the desk">
@@ -256,6 +550,8 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
             <stop offset="100%" stop-color="var(--line)" stop-opacity="0"/>
           </radialGradient>
           <clipPath id="frameClip"><rect x="0" y="0" width="1000" height="600"/></clipPath>
+          <clipPath id="scrLeft"><rect x="100" y="208" width="276" height="184"/></clipPath>
+          <clipPath id="scrRight"><rect x="608" y="194" width="296" height="198"/></clipPath>
         </defs>
 
         <g clip-path="url(#frameClip)">
@@ -285,18 +581,22 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
             <g id="monL">
               <rect x="88" y="196" width="300" height="208" rx="7" fill="var(--fill)" stroke="var(--line)" stroke-width="3.4"/>
               <rect x="100" y="208" width="276" height="184" fill="var(--line)" opacity=".93"/>
-              <g transform="translate(238,300)">
-                <path d="M-72 -22 h108 l26 22 -26 22 h-108 a9 9 0 0 1 -9 -9 v-26 a9 9 0 0 1 9 -9 z"
-                      fill="var(--fill)" opacity=".22" stroke="var(--fill)" stroke-width="2"/>
-                <circle cx="-44" cy="0" r="11" fill="none" stroke="var(--fill)" stroke-width="2"/>
-                <circle cx="14"  cy="0" r="11" fill="none" stroke="var(--fill)" stroke-width="2"/>
-                <g id="monLTools" stroke="var(--spot)" stroke-width="2" fill="none" opacity="0">
-                  <rect x="-84" y="-34" width="176" height="68" stroke-dasharray="6 5"/>
-                  <circle cx="-44" cy="0" r="17"/><circle cx="14" cy="0" r="17"/>
-                  <path d="M-44 -46 h58 M-44 -52 v12 M14 -52 v12"/>
+              <g clip-path="url(#scrLeft)">
+                <g transform="translate(238,300)">
+                  <path d="M-72 -22 h108 l26 22 -26 22 h-108 a9 9 0 0 1 -9 -9 v-26 a9 9 0 0 1 9 -9 z"
+                        fill="var(--fill)" opacity=".22" stroke="var(--fill)" stroke-width="2"/>
+                  <circle cx="-44" cy="0" r="11" fill="none" stroke="var(--fill)" stroke-width="2"/>
+                  <circle cx="14"  cy="0" r="11" fill="none" stroke="var(--fill)" stroke-width="2"/>
+                  <g id="monLTools" stroke="var(--spot)" stroke-width="2" fill="none" opacity="0">
+                    <rect x="-84" y="-34" width="176" height="68" stroke-dasharray="6 5"/>
+                    <circle cx="-44" cy="0" r="17"/><circle cx="14" cy="0" r="17"/>
+                    <path d="M-44 -46 h58 M-44 -52 v12 M14 -52 v12"/>
+                  </g>
+                  <text id="monLRead" x="-84" y="66" fill="var(--spot)" font-size="13"
+                        font-family="'IBM Plex Mono',monospace" letter-spacing="1.4">CAM 01</text>
                 </g>
-                <text id="monLRead" x="-84" y="66" fill="var(--spot)" font-size="13"
-                      font-family="'IBM Plex Mono',monospace" letter-spacing="1.4">CAM 01</text>
+                <rect id="scanL" x="100" y="200" width="276" height="5" fill="var(--spot)" opacity=".3"/>
+                <rect id="flick" x="100" y="208" width="276" height="184" fill="var(--fill)" opacity="0"/>
               </g>
               <rect x="226" y="404" width="24" height="30" fill="var(--fill)" stroke="var(--line)" stroke-width="3"/>
               <rect x="184" y="432" width="108" height="12" rx="5" fill="var(--fill)" stroke="var(--line)" stroke-width="3"/>
@@ -306,8 +606,12 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
             <g id="monR">
               <rect x="596" y="182" width="320" height="222" rx="7" fill="var(--fill)" stroke="var(--line)" stroke-width="3.4"/>
               <rect x="608" y="194" width="296" height="198" fill="var(--line)" opacity=".93"/>
-              <g id="tree" stroke="var(--fill)" stroke-width="3" opacity=".55"></g>
-              <g id="bars" fill="var(--fill)" opacity=".5"></g>
+              <g clip-path="url(#scrRight)">
+                <g id="logScroll">
+                  <g id="tree" stroke="var(--fill)" stroke-width="3" opacity=".55"></g>
+                </g>
+                <g id="bars" fill="var(--fill)" opacity=".5"></g>
+              </g>
               <rect x="744" y="404" width="24" height="30" fill="var(--fill)" stroke="var(--line)" stroke-width="3"/>
               <rect x="702" y="432" width="108" height="12" rx="5" fill="var(--fill)" stroke="var(--line)" stroke-width="3"/>
             </g>
@@ -385,9 +689,6 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
             <!-- cable from the right monitor -->
             <path d="M916 404 c40 12 52 46 84 58" stroke="var(--line)" stroke-width="3" fill="none" opacity=".7"/>
           </g>
-
-          <!-- vignette -->
-          <rect width="1000" height="600" fill="none" stroke="var(--fill)" stroke-width="0"/>
         </g>
       </svg>
 
@@ -427,6 +728,7 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
           </filter>
           <clipPath id="liveClip"><rect x="42" y="46" width="212" height="150"/></clipPath>
           <clipPath id="barrelClip"><rect x="500" y="220" width="80" height="46"/></clipPath>
+          <clipPath id="bgBeltClip"><rect x="20" y="250" width="300" height="70"/></clipPath>
 
           <g id="handShape">
             <path d="M-134 16 h116 a16 16 0 0 1 16 16 v30 a16 16 0 0 1 -16 16 h-116 z"
@@ -442,6 +744,35 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
         </defs>
 
         <rect width="1000" height="620" fill="var(--fill)"/>
+
+        <!-- ambient plant behind the bench -->
+        <g id="plantBG" opacity=".2" stroke="var(--line)" fill="none">
+          <path d="M0 40 H1000" stroke-width="2"/>
+          <g id="trussBG" stroke-width="2"></g>
+          <rect x="0" y="56" width="1000" height="16" rx="8" stroke-width="2.4"/>
+          <circle cx="82" cy="74" r="26" stroke-width="2.4"/>
+          <g id="fanBg" stroke-width="2.4">
+            <path d="M82 74 L82 50 M82 74 L103 86 M82 74 L61 86"/>
+          </g>
+          <g id="gantryBg" stroke-width="2.4">
+            <rect x="300" y="86" width="52" height="34"/>
+            <path d="M326 120 v22"/>
+            <rect x="308" y="142" width="36" height="20"/>
+          </g>
+          <path d="M296 84 H700" stroke-width="2.4"/>
+          <g clip-path="url(#bgBeltClip)">
+            <path d="M20 300 H320 M20 268 H320" stroke-width="2.4"/>
+            <g id="bgBelt" stroke-width="2">
+              <path d="M0 300 v-32 M38 300 v-32 M76 300 v-32 M114 300 v-32 M152 300 v-32
+                       M190 300 v-32 M228 300 v-32 M266 300 v-32 M304 300 v-32 M-38 300 v-32"/>
+            </g>
+          </g>
+          <g stroke-width="2.4">
+            <rect x="40" y="150" width="70" height="96"/>
+            <rect x="122" y="176" width="52" height="70"/>
+            <path d="M40 178 H110 M40 206 H110 M122 202 H174"/>
+          </g>
+        </g>
 
         <!-- speed lines, flashed at key beats -->
         <g id="speed" stroke="var(--line)" stroke-width="2.6" opacity="0"></g>
@@ -592,23 +923,269 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
   </div>
 </section>
 
+<!-- ================= INTERLUDE : THE FLOOR ================= -->
+<section class="sec floor shell" id="floorSec" aria-label="The plant floor">
+  <div class="floor-head">
+    <span class="mono">Interlude</span>
+    <h2>The floor</h2>
+    <span class="mono" style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <i class="led"></i> 6 stations · running
+    </span>
+  </div>
+  <div class="floor-stage">
+    <div class="floor-frame">
+    <svg id="floorScene" viewBox="0 0 1400 380" preserveAspectRatio="xMidYMid slice" role="img"
+         aria-label="Ink drawing of a working plant floor: robot cells, a running conveyor, an inspection camera, a stamping press and a cart crossing the aisle.">
+      <defs>
+        <pattern id="toneF" width="6" height="6" patternUnits="userSpaceOnUse">
+          <circle cx="1.5" cy="1.5" r="1" fill="#15120F" opacity=".2"/>
+        </pattern>
+        <linearGradient id="coneG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#15120F" stop-opacity=".16"/>
+          <stop offset="100%" stop-color="#15120F" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="insG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0D7A8B" stop-opacity=".5"/>
+          <stop offset="100%" stop-color="#0D7A8B" stop-opacity="0"/>
+        </linearGradient>
+        <clipPath id="convClip"><rect x="640" y="120" width="470" height="145"/></clipPath>
+      </defs>
+
+      <rect width="1400" height="380" fill="#F2EDE3"/>
+      <rect width="1400" height="300" fill="url(#toneF)"/>
+
+      <!-- roof structure -->
+      <g stroke="#15120F" fill="none" stroke-width="2" opacity=".45">
+        <path d="M0 12 H1400"/><path d="M0 46 H1400"/>
+        <g id="trussF"></g>
+      </g>
+      <!-- duct -->
+      <g stroke="#15120F" fill="#F2EDE3" stroke-width="2.4" opacity=".7">
+        <rect x="-10" y="58" width="1420" height="22" rx="11"/>
+        <g id="ductRibs" stroke-width="2"></g>
+      </g>
+
+      <!-- lamps -->
+      <g stroke="#15120F" stroke-width="2.4" fill="#F2EDE3">
+        <g class="lamp lamp1">
+          <path d="M200 80 v30" fill="none"/>
+          <path d="M176 110 h48 l14 26 h-76 z"/>
+          <path d="M190 136 L154 300 H246 L210 136 z" fill="url(#coneG)" stroke="none"/>
+        </g>
+        <g class="lamp lamp2">
+          <path d="M700 80 v30" fill="none"/>
+          <path d="M676 110 h48 l14 26 h-76 z"/>
+          <path d="M690 136 L654 300 H746 L710 136 z" fill="url(#coneG)" stroke="none"/>
+        </g>
+        <g class="lamp lamp3">
+          <path d="M1330 80 v30" fill="none"/>
+          <path d="M1306 110 h48 l14 26 h-76 z"/>
+          <path d="M1320 136 L1284 300 H1376 L1340 136 z" fill="url(#coneG)" stroke="none"/>
+        </g>
+      </g>
+
+      <!-- hanging line sign -->
+      <g stroke="#15120F" stroke-width="2.4" fill="none">
+        <path d="M812 80 v24 M908 80 v24"/>
+      </g>
+      <rect x="792" y="104" width="136" height="34" rx="3" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+      <text x="836" y="127" fill="#15120F" font-size="17" font-family="'IBM Plex Mono',monospace"
+            letter-spacing="2">LINE 01</text>
+      <circle cx="806" cy="121" r="5" fill="#0D7A8B">
+        <animate attributeName="opacity" values="1;1;.15;.15" dur="1.7s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- back wall: racking + fan + vent -->
+      <g stroke="#15120F" fill="none" stroke-width="2.4" opacity=".8">
+        <rect x="20" y="170" width="130" height="130"/>
+        <path d="M20 214 H150 M20 258 H150 M85 170 V300"/>
+        <rect x="30" y="182" width="42" height="26" fill="#E8E2D4"/>
+        <rect x="98" y="226" width="42" height="26" fill="#E8E2D4"/>
+        <rect x="30" y="270" width="42" height="26" fill="#E8E2D4"/>
+      </g>
+      <g stroke="#15120F" fill="#F2EDE3" stroke-width="2.4">
+        <circle cx="90" cy="120" r="34"/>
+      </g>
+      <g id="fanF" stroke="#15120F" stroke-width="2.4" fill="none">
+        <path d="M90 120 L90 92 M90 120 L114 134 M90 120 L66 134"/>
+      </g>
+      <g stroke="#15120F" stroke-width="2.4" fill="#F2EDE3">
+        <rect x="176" y="252" width="46" height="48"/>
+      </g>
+      <g id="vent" fill="none" stroke="#15120F" stroke-width="2.4" opacity="0">
+        <path d="M199 246 c-12 -14 10 -22 0 -36"/>
+      </g>
+
+      <!-- WELD CELL : robot A -->
+      <g stroke="#15120F" fill="none" stroke-width="2.4" opacity=".75">
+        <path d="M240 300 V176 M420 300 V176 M240 176 H420"/>
+        <path d="M264 300 V186 M288 300 V186 M312 300 V186 M336 300 V186
+                 M360 300 V186 M384 300 V186 M408 300 V186"
+              stroke-width="1.6" opacity=".32"/>
+      </g>
+      <path d="M266 300 h68 l-9 -38 h-50 z" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+      <g class="armA">
+        <rect x="291" y="176" width="18" height="88" rx="9" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+        <g class="armA2">
+          <rect x="296" y="168" width="86" height="17" rx="8" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+          <path d="M378 168 l22 8 -22 9 z" fill="#F2EDE3" stroke="#15120F" stroke-width="2.6"/>
+        </g>
+      </g>
+      <g id="sparks" stroke="#15120F" stroke-width="2.6" fill="none" opacity="0" stroke-linecap="round">
+        <path d="M398 190 l18 -14 M398 190 l22 4 M398 190 l12 20 M398 190 l-4 22 M398 190 l24 -22"/>
+      </g>
+      <text id="sfxWeld" x="416" y="142" opacity="0" fill="#F2EDE3" stroke="#15120F" stroke-width="6"
+            paint-order="stroke" font-family="'Shippori Mincho B1',serif" font-weight="800"
+            font-size="36" letter-spacing="1" transform="rotate(-8 416 142)">BZZT</text>
+
+      <!-- PICK CELL : robot B -->
+      <path d="M506 300 h68 l-9 -38 h-50 z" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+      <g class="armB">
+        <rect x="531" y="176" width="18" height="88" rx="9" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+        <g class="armB2">
+          <rect x="536" y="168" width="80" height="17" rx="8" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+          <path d="M612 162 h14 v22 h-14 M618 184 v10" fill="none" stroke="#15120F" stroke-width="2.6"/>
+        </g>
+      </g>
+
+      <!-- CONVEYOR -->
+      <g stroke="#15120F" fill="#F2EDE3" stroke-width="3">
+        <rect x="648" y="238" width="464" height="24" rx="4"/>
+        <path d="M676 262 v38 M840 262 v38 M1004 262 v38 M1084 262 v38" stroke-width="2.6"/>
+        <circle cx="660" cy="250" r="13"/>
+        <circle cx="1100" cy="250" r="13"/>
+      </g>
+      <g id="rollA" stroke="#15120F" stroke-width="2.4"><path d="M660 237 v26"/></g>
+      <g id="rollB" stroke="#15120F" stroke-width="2.4"><path d="M1100 237 v26"/></g>
+      <g clip-path="url(#convClip)">
+        <g id="beltSlats" stroke="#15120F" stroke-width="2" opacity=".45"></g>
+        <g class="cpart">
+          <path d="M600 238 h52 l14 -14 h-52 z" fill="#E8E2D4" stroke="#15120F" stroke-width="2.6"/>
+          <path d="M600 238 v-14 h52 v14 z" fill="#F2EDE3" stroke="#15120F" stroke-width="2.6"/>
+          <circle cx="616" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+          <circle cx="638" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+        </g>
+        <g class="cpart">
+          <path d="M600 238 h52 l14 -14 h-52 z" fill="#E8E2D4" stroke="#15120F" stroke-width="2.6"/>
+          <path d="M600 238 v-14 h52 v14 z" fill="#F2EDE3" stroke="#15120F" stroke-width="2.6"/>
+          <circle cx="616" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+          <circle cx="638" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+        </g>
+        <g class="cpart">
+          <path d="M600 238 h52 l14 -14 h-52 z" fill="#E8E2D4" stroke="#15120F" stroke-width="2.6"/>
+          <path d="M600 238 v-14 h52 v14 z" fill="#F2EDE3" stroke="#15120F" stroke-width="2.6"/>
+          <circle cx="616" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+          <circle cx="638" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+        </g>
+        <g class="cpart">
+          <path d="M600 238 h52 l14 -14 h-52 z" fill="#E8E2D4" stroke="#15120F" stroke-width="2.6"/>
+          <path d="M600 238 v-14 h52 v14 z" fill="#F2EDE3" stroke="#15120F" stroke-width="2.6"/>
+          <circle cx="616" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+          <circle cx="638" cy="231" r="4" fill="none" stroke="#15120F" stroke-width="2"/>
+        </g>
+      </g>
+
+      <!-- INSPECTION STATION -->
+      <path id="insBeam" d="M940 168 L900 236 H1000 L968 168 Z" fill="url(#insG)" opacity=".1"/>
+      <g stroke="#15120F" fill="#F2EDE3" stroke-width="3">
+        <rect x="1122" y="120" width="16" height="180"/>
+        <path d="M1122 132 H960" stroke-width="3"/>
+        <rect x="928" y="132" width="52" height="34" rx="4"/>
+        <rect x="940" y="166" width="28" height="14" rx="3"/>
+      </g>
+      <rect id="insBox" x="898" y="212" width="104" height="34" fill="none" stroke="#0D7A8B"
+            stroke-width="2.6" stroke-dasharray="7 5" opacity="0"/>
+      <text id="insRead" x="1012" y="200" fill="#0D7A8B" font-size="17" opacity=".25"
+            font-family="'IBM Plex Mono',monospace" letter-spacing="1.5">PASS</text>
+
+      <!-- PRESS -->
+      <g stroke="#15120F" fill="#F2EDE3" stroke-width="3">
+        <path d="M1160 300 V116 h116 V300"/>
+        <rect x="1152" y="100" width="132" height="22" rx="4"/>
+        <rect x="1168" y="252" width="100" height="20" rx="3"/>
+      </g>
+      <g id="ram">
+        <rect x="1186" y="140" width="64" height="70" rx="4" fill="#E8E2D4" stroke="#15120F" stroke-width="3"/>
+        <rect x="1174" y="206" width="88" height="18" rx="3" fill="#F2EDE3" stroke="#15120F" stroke-width="3"/>
+      </g>
+      <g id="press-flash" stroke="#15120F" stroke-width="2.6" fill="none" opacity="0" stroke-linecap="round">
+        <path d="M1168 252 l-22 -12 M1268 252 l22 -12 M1168 252 l-18 12 M1268 252 l18 12 M1218 246 l0 -16"/>
+      </g>
+      <text id="sfxPress" x="1218" y="150" opacity="0" text-anchor="middle" fill="#F2EDE3" stroke="#15120F"
+            stroke-width="6" paint-order="stroke" font-family="'Shippori Mincho B1',serif" font-weight="800"
+            font-size="44" letter-spacing="2" transform="rotate(6 1218 150)">DON</text>
+
+      <!-- operator -->
+      <g stroke="#15120F" fill="#F2EDE3" stroke-width="3">
+        <circle cx="1338" cy="188" r="17"/>
+        <path d="M1338 205 v52 M1338 257 l-15 43 M1338 257 l15 43 M1338 218 l-19 20 M1338 218 l22 14"/>
+      </g>
+      <g id="opTablet"><rect x="1352" y="222" width="26" height="20" rx="3" fill="#E8E2D4" stroke="#15120F" stroke-width="2.6"/></g>
+
+      <!-- floor -->
+      <path d="M0 300 H1400" stroke="#15120F" stroke-width="3.4"/>
+      <path d="M0 322 H1400" stroke="#15120F" stroke-width="2" stroke-dasharray="16 12" opacity=".45"/>
+      <path d="M0 372 H1400" stroke="#15120F" stroke-width="2" stroke-dasharray="16 12" opacity=".45"/>
+
+      <!-- AGV -->
+      <g id="agv">
+        <g stroke="#15120F" fill="#F2EDE3" stroke-width="3">
+          <rect x="40" y="316" width="132" height="30" rx="5"/>
+          <rect x="66" y="294" width="80" height="22" rx="3" fill="#E8E2D4"/>
+        </g>
+        <circle class="wheel" cx="72" cy="350" r="11" fill="#F2EDE3" stroke="#15120F" stroke-width="3"
+                style="transform-origin:72px 350px"/>
+        <circle class="wheel" cx="140" cy="350" r="11" fill="#F2EDE3" stroke="#15120F" stroke-width="3"
+                style="transform-origin:140px 350px"/>
+        <path d="M72 339 v22 M140 339 v22" stroke="#15120F" stroke-width="2" opacity=".6"/>
+      </g>
+    </svg>
+    </div>
+    <div class="cap floor-cap">Nobody claps when a station runs right. That is the whole point of it.</div>
+  </div>
+  <span class="mono floor-swipe">Swipe the floor →</span>
+</section>
+
+<!-- ================= TICKER ================= -->
+<div class="ticker" aria-hidden="true">
+  <div>
+    <p><span>Station 01 · running</span><span>Cam 01 · <em>pass</em></span><span>Takt 4.2 s</span>
+      <span>Lens 16 mm · locked</span><span>Calibration · 0.041 mm/px</span><span>Line 02 · running</span>
+      <span>Defect model v7 · loaded</span><span>Windsor, Ontario</span></p>
+    <p><span>Station 01 · running</span><span>Cam 01 · <em>pass</em></span><span>Takt 4.2 s</span>
+      <span>Lens 16 mm · locked</span><span>Calibration · 0.041 mm/px</span><span>Line 02 · running</span>
+      <span>Defect model v7 · loaded</span><span>Windsor, Ontario</span></p>
+  </div>
+</div>
+
 <!-- ================= CHAPTER 02 ================= -->
 <section class="sec shell" id="ch2">
   <div class="chapter">
     <span class="chapter-no">Ch. 02</span>
     <h2 class="chapter-name">Where I've worked</h2>
-    <span class="chapter-jp"></span>
+    <span class="chapter-jp"><i class="led"></i> Four stations · logged</span>
   </div>
 
   <article class="post reveal">
+    <div class="retic" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <svg class="post-art" viewBox="0 0 100 100" aria-hidden="true">
       <g fill="none" stroke="#15120F" stroke-width="3">
-        <path d="M14 84 H86"/><path d="M62 84 V26"/><path d="M34 30 H66"/>
-        <rect x="26" y="16" width="30" height="16" rx="3" fill="#E8E2D4"/>
-        <rect x="34" y="32" width="14" height="12" fill="#E8E2D4"/>
-        <path d="M30 44 H52"/>
-        <path d="M20 70 h34 l8 6 -8 6 H20 z" fill="#E8E2D4"/>
-        <path d="M36 52 L26 66 M46 52 L56 66" stroke-dasharray="4 4"/>
+        <path d="M8 86 H92"/>
+        <g class="a1-slats" stroke-width="1.8" opacity=".45">
+          <path d="M4 86 v8 M12 86 v8 M20 86 v8 M28 86 v8 M36 86 v8 M44 86 v8 M52 86 v8
+                   M60 86 v8 M68 86 v8 M76 86 v8 M84 86 v8 M92 86 v8"/>
+        </g>
+        <path d="M10 22 H90"/>
+        <path d="M12 22 V14 M88 22 V14"/>
+        <g class="a1-cam">
+          <path class="a1-beam" d="M43 42 L28 76 H72 L57 42 Z" fill="#0D7A8B" opacity=".1" stroke="none"/>
+          <rect x="39" y="24" width="22" height="14" fill="#E8E2D4"/>
+          <rect x="45" y="38" width="10" height="6" fill="#E8E2D4"/>
+        </g>
+        <g class="a1-parts">
+          <path d="M16 72 h20 l6 7 -6 7 h-20 z" fill="#E8E2D4"/>
+          <path d="M52 72 h20 l6 7 -6 7 h-20 z" fill="#E8E2D4"/>
+        </g>
       </g>
     </svg>
     <div>
@@ -621,13 +1198,24 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
   </article>
 
   <article class="post reveal">
+    <div class="retic" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <svg class="post-art" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><clipPath id="a2clip"><rect x="18" y="28" width="64" height="48"/></clipPath></defs>
       <g fill="none" stroke="#15120F" stroke-width="3">
-        <rect x="18" y="26" width="64" height="48" rx="4" fill="#E8E2D4"/>
-        <path d="M30 26 v-8 h10 v8 M60 26 v-8 h10 v8"/>
-        <path d="M18 44 H82" stroke-dasharray="5 5"/>
-        <path d="M28 58 h44"/>
-        <circle cx="50" cy="50" r="30" stroke-dasharray="3 7" opacity=".6"/>
+        <rect x="18" y="28" width="64" height="48" rx="3" fill="#F2EDE3"/>
+        <g clip-path="url(#a2clip)">
+          <g class="a2-cells">
+            <rect x="24" y="42" width="18" height="22" rx="3" fill="#E8E2D4"/>
+            <rect x="50" y="42" width="18" height="22" rx="3" fill="#E8E2D4"/>
+            <rect x="76" y="42" width="18" height="22" rx="3" fill="#E8E2D4"/>
+            <path d="M28 42 v-5 h4 v5 M60 42 v-5 h4 v5" stroke-width="2.4"/>
+          </g>
+          <path class="a2-scan" d="M18 34 H82" stroke="#0D7A8B" stroke-width="3"/>
+          <rect class="a2-flag" x="46" y="38" width="26" height="30" stroke="#0D7A8B"
+                stroke-width="2.4" stroke-dasharray="4 3" opacity="0"/>
+        </g>
+        <path d="M30 28 v-8 h10 v8 M60 28 v-8 h10 v8"/>
+        <path d="M26 84 H74" stroke-width="2.4" opacity=".6"/>
       </g>
     </svg>
     <div>
@@ -639,12 +1227,23 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
     </div>
   </article>
 
-     <article class="post reveal">
+  <article class="post reveal">
+    <div class="retic" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <svg class="post-art" viewBox="0 0 100 100" aria-hidden="true">
       <g fill="none" stroke="#15120F" stroke-width="3">
-        <circle cx="44" cy="46" r="20" fill="#E8E2D4"/><circle cx="44" cy="46" r="7"/>
-        <path d="M44 20 v8 M44 64 v8 M18 46 h8 M62 46 h8 M26 28 l6 6 M62 60 l6 6 M62 32 l6 -6 M26 64 l6 -6"/>
-        <path d="M62 74 h22 M84 68 v12 M62 68 v12"/>
+        <g class="a3-gear">
+          <circle cx="44" cy="46" r="20" fill="#E8E2D4"/>
+          <circle cx="44" cy="46" r="25" stroke-width="7" stroke-dasharray="5 8"/>
+          <circle cx="44" cy="46" r="7" fill="#F2EDE3"/>
+        </g>
+        <g class="a3-gear2">
+          <circle cx="72" cy="70" r="11" fill="#E8E2D4"/>
+          <circle cx="72" cy="70" r="14" stroke-width="5" stroke-dasharray="4 6"/>
+        </g>
+        <path d="M14 84 H58" stroke-width="2.6"/>
+        <path d="M14 78 v12" stroke-width="2.6"/>
+        <g class="a3-jaw"><path d="M40 78 v12" stroke-width="2.6"/></g>
+        <path d="M14 22 h30 M14 18 v8 M44 18 v8" stroke-width="2.2" opacity=".55"/>
       </g>
     </svg>
     <div>
@@ -655,14 +1254,22 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
       <div class="post-tags"><span>CAD validation</span><span>GD&amp;T</span><span>Precision parts</span></div>
     </div>
   </article>
-   
+
   <article class="post reveal">
+    <div class="retic" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <svg class="post-art" viewBox="0 0 100 100" aria-hidden="true">
+      <g class="a4-pulse" fill="none" stroke="#0D7A8B" stroke-width="2.4">
+        <circle cx="50" cy="52" r="6"/><circle cx="50" cy="52" r="6"/><circle cx="50" cy="52" r="6"/>
+      </g>
       <g fill="none" stroke="#15120F" stroke-width="3">
         <ellipse cx="50" cy="28" rx="26" ry="10" fill="#E8E2D4"/>
-        <path d="M24 28 v20 c0 6 12 10 26 10 s26 -4 26 -10 V28"/>
-        <path d="M24 48 v20 c0 6 12 10 26 10 s26 -4 26 -10 V48"/>
-        <path d="M38 84 h24"/>
+        <path d="M24 28 v20 c0 6 12 10 26 10 s26 -4 26 -10 V28" fill="#F2EDE3"/>
+        <path d="M24 48 v20 c0 6 12 10 26 10 s26 -4 26 -10 V48" fill="#F2EDE3"/>
+        <ellipse cx="50" cy="28" rx="26" ry="10" fill="none"/>
+        <g class="a4-rows" stroke-width="2.6" opacity=".3">
+          <path d="M36 40 h20"/><path d="M36 60 h28"/><path d="M36 70 h14"/>
+        </g>
+        <path d="M38 88 h24" stroke-width="2.6"/>
       </g>
     </svg>
     <div>
@@ -673,16 +1280,17 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
       <div class="post-tags"><span>SQL</span><span>Node.js</span><span>SuiteScript</span></div>
     </div>
   </article>
-
-
 </section>
+
+<!-- belt divider -->
+<div class="belt" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
 <!-- ================= CHAPTER 03 ================= -->
 <section class="sec shell" id="ch3">
   <div class="chapter">
     <span class="chapter-no">Ch. 03</span>
     <h2 class="chapter-name">On the bench</h2>
-    <span class="chapter-jp"></span>
+    <span class="chapter-jp"><i class="led"></i> Bench 01 · powered</span>
   </div>
 
   <div class="cap reveal" style="max-width:44ch;margin-bottom:clamp(24px,4vh,44px)">
@@ -693,6 +1301,7 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
     <div class="stat reveal">
       <dl>
         <dt>Base</dt><dd>Windsor, Ontario</dd>
+        <dt>Local</dt><dd class="tick" id="clock">--:--:--</dd>
         <dt>Field</dt><dd>Machine vision</dd>
         <dt>Work</dt><dd>Setups &amp; commissioning</dd>
         <dt>Lines</dt><dd>Automotive, EV battery, pharma, aerospace</dd>
@@ -745,15 +1354,18 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
   </div>
 </section>
 
+<!-- belt divider -->
+<div class="belt" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
 <!-- ================= CHAPTER 04 ================= -->
 <section class="sec shell" id="ch4">
   <div class="chapter">
     <span class="chapter-no">Ch. 04</span>
     <h2 class="chapter-name">Get in touch</h2>
-    <span class="chapter-jp"></span>
+    <span class="chapter-jp"><i class="led"></i> Inbox · open</span>
   </div>
 
-  <div class="end reveal">
+  <div class="end reveal" id="endPanel">
     <div>
       <p>Reach out to me by connecting me through linkedin.</p>
       <div class="links">
@@ -761,18 +1373,24 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
         <span>Windsor, Ontario</span>
       </div>
     </div>
-    <svg class="seal" viewBox="0 0 120 120" role="img" aria-label="Seal reading pass">
-      <circle cx="60" cy="60" r="54" fill="none" stroke="#BC3527" stroke-width="7"/>
-      <circle cx="60" cy="60" r="44" fill="none" stroke="#BC3527" stroke-width="2.5"/>
-      <text x="60" y="74" text-anchor="middle" fill="#BC3527"
-            font-family="'Shippori Mincho B1',serif" font-weight="800" font-size="34" letter-spacing="1">合格</text>
-      <text x="60" y="94" text-anchor="middle" fill="#BC3527"
-            font-family="'IBM Plex Mono',monospace" font-size="10" letter-spacing="3">PASS</text>
-    </svg>
+    <div class="seal-wrap">
+      <svg class="impact" viewBox="0 0 200 200" aria-hidden="true">
+        <g stroke="#BC3527" stroke-width="3" fill="none" stroke-linecap="round" id="impactLines"></g>
+      </svg>
+      <svg class="seal" viewBox="0 0 120 120" role="img" aria-label="Seal reading pass">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="#BC3527" stroke-width="7"/>
+        <circle cx="60" cy="60" r="44" fill="none" stroke="#BC3527" stroke-width="2.5"/>
+        <text x="60" y="74" text-anchor="middle" fill="#BC3527"
+              font-family="'Shippori Mincho B1',serif" font-weight="800" font-size="34" letter-spacing="1">合格</text>
+        <text x="60" y="94" text-anchor="middle" fill="#BC3527"
+              font-family="'IBM Plex Mono',monospace" font-size="10" letter-spacing="3">PASS</text>
+      </svg>
+    </div>
   </div>
 
   <footer class="mono">
-    <span>Khaled Ali Ahmed— machine vision, Windsor</span>
+    <span>Khaled Ali Ahmed — machine vision, Windsor</span>
+    <span>Line 01 · still running</span>
   </footer>
 </section>
 
@@ -795,6 +1413,66 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
     if (extra) for (var k in extra) l.setAttribute(k, extra[k]);
     parent.appendChild(l); return l;
   }
+  function pad(n,w){ n=String(n); while(n.length<w) n="0"+n; return n; }
+
+  /* =======================================================
+     BOOT
+     ======================================================= */
+  (function boot(){
+    var el = $("boot");
+    if (!el) return;
+    if (reduce){ el.remove(); document.getElementById("hud").classList.add("up"); return; }
+    function done(){
+      if (el.classList.contains("done")) return;
+      el.classList.add("done");
+      setTimeout(function(){ el.remove(); }, 620);
+      $("hud").classList.add("up");
+    }
+    setTimeout(done, 1750);
+    el.addEventListener("click", done);
+    window.addEventListener("wheel", done, {once:true, passive:true});
+    window.addEventListener("touchstart", done, {once:true, passive:true});
+  })();
+
+  /* =======================================================
+     HUD
+     ======================================================= */
+  (function hud(){
+    var fill=$("hudFill"), pct=$("hudPct"), units=$("hudUnits"), takt=$("hudTakt");
+    var made = 1284, tick = false;
+    function paint(){
+      tick = false;
+      var h = document.documentElement;
+      var max = h.scrollHeight - window.innerHeight;
+      var p = max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
+      fill.style.transform = "scaleX("+p+")";
+      pct.textContent = pad(Math.round(p*100),2);
+    }
+    window.addEventListener("scroll", function(){ if(!tick){ tick=true; requestAnimationFrame(paint);} }, {passive:true});
+    window.addEventListener("resize", paint);
+    paint();
+    if (reduce) return;
+    setInterval(function(){
+      if (document.hidden) return;
+      made += 1;
+      units.textContent = pad(made,6);
+      takt.textContent = (4.0 + Math.random()*0.5).toFixed(1) + " s";
+    }, 2600);
+  })();
+
+  /* =======================================================
+     CLOCK — time on the floor
+     ======================================================= */
+  (function clock(){
+    var el = $("clock"); if (!el) return;
+    function paint(){
+      try{
+        el.textContent = new Date().toLocaleTimeString("en-CA",
+          {timeZone:"America/Toronto", hour12:false});
+      }catch(e){ el.textContent = new Date().toTimeString().slice(0,8); }
+    }
+    paint(); setInterval(paint, 1000);
+  })();
 
   /* =======================================================
      HERO
@@ -806,11 +1484,15 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
       line(focusLines, 500+Math.cos(ang)*r0, 300+Math.sin(ang)*r0*0.7,
                        500+Math.cos(ang)*r1, 300+Math.sin(ang)*r1*0.7);
     }
+    /* the log: two identical stacks so the scroll loops seamlessly */
     var tree = $("tree");
     var rows = [200,140,168,96,180,124,150,88,164,120];
-    for (var r=0;r<rows.length;r++){
-      var indent = (r%3===0) ? 0 : (r%3===1 ? 18 : 34);
-      line(tree, 632+indent, 226+r*15, 632+indent+rows[r]*0.72, 226+r*15);
+    for (var pass=0; pass<2; pass++){
+      for (var r=0;r<rows.length;r++){
+        var indent = (r%3===0) ? 0 : (r%3===1 ? 18 : 34);
+        var y = 226 + r*15 + pass*150;
+        line(tree, 632+indent, y, 632+indent+rows[r]*0.72, y);
+      }
     }
     var bars = $("bars");
     var hs = [26,42,18,58,34,48,22];
@@ -857,6 +1539,10 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
   (function chapter01(){
     var slats=$("slats");
     for (var i=0;i<50;i++) line(slats, i*22, 520, i*22, 530);
+
+    var truss=$("trussBG"), d="M0 40";
+    for (var tz=0; tz<26; tz++) d += " L"+(tz*40+20)+" "+(tz%2?40:12)+" L"+(tz*40+40)+" 40";
+    var tp=document.createElementNS(NS,"path"); tp.setAttribute("d",d); truss.appendChild(tp);
 
     var checker=$("checker");
     for (var cy=0; cy<6; cy++){
@@ -1027,11 +1713,74 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
     f3();
   })();
 
-  /* ---------- reveals ---------- */
-  var io = new IntersectionObserver(function(en){
-    en.forEach(function(e){ if (e.isIntersecting) e.target.classList.add("in"); });
-  }, {threshold:0.1, rootMargin:"0px 0px -6% 0px"});
-  document.querySelectorAll(".sec").forEach(function(s){ io.observe(s); });
+  /* =======================================================
+     THE FLOOR — repeated hardware built in code
+     ======================================================= */
+  (function floorScene(){
+    var truss=$("trussF");
+    if (truss){
+      var d="M0 46";
+      for (var i=0;i<35;i++) d += " L"+(i*40+20)+" "+(i%2?46:12)+" L"+(i*40+40)+" 46";
+      var p=document.createElementNS(NS,"path"); p.setAttribute("d",d); truss.appendChild(p);
+    }
+    var ribs=$("ductRibs");
+    if (ribs){
+      var rd="";
+      for (var r=0;r<16;r++) rd += "M"+(r*90+30)+" 58 v22 ";
+      var rp=document.createElementNS(NS,"path"); rp.setAttribute("d",rd); ribs.appendChild(rp);
+    }
+    var bs=$("beltSlats");
+    if (bs){
+      var sd="";
+      for (var s=0;s<26;s++) sd += "M"+(618+s*22)+" 240 v20 ";
+      var sp=document.createElementNS(NS,"path"); sp.setAttribute("d",sd); bs.appendChild(sp);
+    }
+    var imp=$("impactLines");
+    if (imp){
+      for (var k=0;k<18;k++){
+        var a=(k/18)*Math.PI*2;
+        line(imp, 100+Math.cos(a)*66, 100+Math.sin(a)*66,
+                  100+Math.cos(a)*96, 100+Math.sin(a)*96);
+      }
+    }
+  })();
+
+  /* =======================================================
+     REVEALS — cards, kit panels, the seal
+     ======================================================= */
+  (function reveals(){
+    var io = new IntersectionObserver(function(en){
+      en.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, {threshold:0.18, rootMargin:"0px 0px -8% 0px"});
+    document.querySelectorAll(".reveal").forEach(function(n){ io.observe(n); });
+
+    var ios = new IntersectionObserver(function(en){
+      en.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add("in"); ios.unobserve(e.target); } });
+    }, {threshold:0.05});
+    document.querySelectorAll(".sec").forEach(function(n){ ios.observe(n); });
+
+    /* card artwork only runs while the card is on screen */
+    var iom = new IntersectionObserver(function(en){
+      en.forEach(function(e){ e.target.classList.toggle("running", e.isIntersecting); });
+    }, {threshold:0.2});
+    document.querySelectorAll(".post-art, .floor-frame").forEach(function(n){ iom.observe(n); });
+  })();
+
+  /* =======================================================
+     RETICLE — a vision tool that follows the pointer
+     ======================================================= */
+  (function reticle(){
+    if (reduce || !window.matchMedia("(hover:hover)").matches) return;
+    document.querySelectorAll(".post").forEach(function(card){
+      var ret = card.querySelector(".retic");
+      if (!ret) return;
+      card.addEventListener("pointermove", function(e){
+        var r = card.getBoundingClientRect();
+        ret.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        ret.style.setProperty("--my", (e.clientY - r.top) + "px");
+      });
+    });
+  })();
 })();
 </script>
 </body>

@@ -1388,6 +1388,150 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
     </div>
   </div>
 
+
+<style>
+.vb-note{
+  font-family:var(--mincho,Georgia,serif);font-weight:700;
+  background:var(--paper,#F2EDE3);color:var(--ink,#15120F);
+  border:2.5px solid var(--ink,#15120F);
+  padding:9px 15px 11px;max-width:40ch;
+  font-size:clamp(.86rem,1.5vw,1.06rem);line-height:1.45;
+  margin-top:clamp(34px,5.5vh,60px);
+}
+.vb-card{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+  gap:clamp(16px,3vw,32px);align-items:center;
+  border:3px solid var(--ink,#15120F);background:var(--paper,#F2EDE3);
+  box-shadow:6px 6px 0 var(--ink,#15120F);
+  padding:clamp(18px,3vw,30px);margin-top:clamp(18px,3vh,30px);
+  text-decoration:none;color:inherit;position:relative;overflow:hidden;
+  transition:transform .3s cubic-bezier(.2,.8,.25,1),box-shadow .3s cubic-bezier(.2,.8,.25,1);
+}
+.vb-card:hover,.vb-card:focus-visible{transform:translate(-3px,-3px);box-shadow:11px 11px 0 var(--ink,#15120F)}
+.vb-card:focus-visible{outline:3px solid var(--cyan,#0D7A8B);outline-offset:3px}
+.vb-art{width:104px;height:104px;flex:none;display:block;
+  border:2.5px solid var(--ink,#15120F);background:var(--paper-2,#E8E2D4)}
+.vb-kicker{font-family:var(--mono,ui-monospace,monospace);font-size:.62rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--cyan,#0D7A8B);margin-bottom:6px}
+.vb-card h3{font-family:var(--mincho,Georgia,serif);font-weight:800;margin:0 0 6px;
+  font-size:clamp(1.15rem,2.6vw,1.7rem);line-height:1.14}
+.vb-card p{margin:0;max-width:54ch;font-size:.92rem;line-height:1.6}
+.vb-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.vb-tags span{font-family:var(--mono,ui-monospace,monospace);font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;border:1.5px solid var(--ink,#15120F);padding:3px 8px}
+.vb-go{font-family:var(--mono,ui-monospace,monospace);font-size:.68rem;letter-spacing:.2em;
+  text-transform:uppercase;border:2.5px solid var(--ink,#15120F);padding:11px 18px;
+  white-space:nowrap;flex:none;transition:background-color .2s,color .2s}
+.vb-card:hover .vb-go,.vb-card:focus-visible .vb-go{background:var(--ink,#15120F);color:var(--paper,#F2EDE3)}
+@media (max-width:760px){
+  .vb-card{grid-template-columns:1fr;justify-items:start}
+  .vb-art{width:88px;height:88px}
+}
+
+/* entrance: only applied once the script arms it, so no-JS still shows everything */
+[data-vb-anim] .vb-note,[data-vb-anim] .vb-card{opacity:0;transform:translateY(20px);
+  transition:opacity .65s ease,transform .65s cubic-bezier(.2,.75,.3,1)}
+[data-vb-anim].vb-in .vb-note,[data-vb-anim].vb-in .vb-card{opacity:1;transform:none}
+[data-vb-anim].vb-in .vb-card{transition-delay:.1s}
+
+/* artwork motion: runs only while the section is on screen */
+.vb-scan{animation:vb-scan 2.6s ease-in-out infinite}
+@keyframes vb-scan{0%,100%{transform:translateY(0)}50%{transform:translateY(40px)}}
+.vb-box{animation:vb-box 2.6s steps(1,end) infinite}
+@keyframes vb-box{0%,44%{opacity:0}46%,88%{opacity:1}89%,100%{opacity:0}}
+.vb-beam{animation:vb-beam 2.6s ease-in-out infinite}
+@keyframes vb-beam{0%,100%{opacity:.12}50%{opacity:.42}}
+.vb-wrap:not(.vb-run) .vb-art *{animation-play-state:paused}
+
+@media (prefers-reduced-motion:reduce){
+  .vb-card{transition:none}
+  [data-vb-anim] .vb-note,[data-vb-anim] .vb-card{opacity:1;transform:none;transition:none}
+  .vb-scan,.vb-box,.vb-beam{animation:none}
+  .vb-box{opacity:1}
+}
+</style>
+
+<div class="vb-wrap">
+  <div class="vb-note">One more thing — a bench you can actually try.</div>
+
+  <!-- set href to wherever the file lives, e.g. "vision-bench.html" or a full URL -->
+  <a class="vb-card" href="vision-bench.html">
+    <svg class="vb-art" viewBox="0 0 100 100" role="img"
+         aria-label="Drawing of a camera inspecting a part on a conveyor">
+      <g fill="none" stroke="var(--ink,#15120F)" stroke-width="3">
+        <path d="M10 20 H90 M14 20 V12 M86 20 V12"/>
+        <path class="vb-beam" d="M42 40 L26 76 H74 L58 40 Z"
+              fill="var(--cyan,#0D7A8B)" opacity=".12" stroke="none"/>
+        <rect x="38" y="22" width="24" height="15" fill="var(--paper-2,#E8E2D4)"/>
+        <rect x="45" y="37" width="10" height="6" fill="var(--paper-2,#E8E2D4)"/>
+        <path d="M8 86 H92"/>
+        <path d="M30 76 h30 l8 -8 h-30 z" fill="var(--paper-2,#E8E2D4)" stroke-width="2.6"/>
+        <path d="M30 76 v-8 h30 v8 z" fill="var(--paper,#F2EDE3)" stroke-width="2.6"/>
+        <circle cx="39" cy="72" r="3.4" stroke-width="2.2"/>
+        <circle cx="53" cy="72" r="3.4" stroke-width="2.2"/>
+        <rect class="vb-box" x="26" y="62" width="40" height="20" opacity="0"
+              stroke="var(--cyan,#0D7A8B)" stroke-width="2.4" stroke-dasharray="4 3"/>
+        <path class="vb-scan" d="M22 46 H78" stroke="var(--cyan,#0D7A8B)" stroke-width="3"/>
+      </g>
+    </svg>
+
+    <div>
+      <div class="vb-kicker">Side project · runs in the browser</div>
+      <h3>Vision Bench</h3>
+      <p>A training bench for picking the camera, lens and light for a real inspection. Fourteen customer jobs, defects you can place anywhere on the part, a simulated sensor image with the glare, blur and noise you would actually get, and the expert setup with the reasoning behind it.</p>
+      <div class="vb-tags"><span>Lighting</span><span>Optics</span><span>Resolution</span><span>Depth of field</span></div>
+    </div>
+
+    <span class="vb-go">Open the bench</span>
+  </a>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  try{
+    var wrap = document.currentScript && document.currentScript.previousElementSibling;
+    if (!wrap || !wrap.classList.contains("vb-wrap")){
+      var all = document.querySelectorAll(".vb-wrap");
+      wrap = all[all.length-1];
+    }
+    if (!wrap) return;
+
+    var still = false;
+    try{ still = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
+
+    if (!("IntersectionObserver" in window) || still){
+      wrap.classList.add("vb-in","vb-run");   // show everything, no scroll tricks
+      return;
+    }
+
+    wrap.setAttribute("data-vb-anim","");     // arm the entrance only now
+
+    var io = new IntersectionObserver(function(entries){
+      for (var i=0;i<entries.length;i++){
+        var e = entries[i];
+        if (e.isIntersecting) wrap.classList.add("vb-in");
+        wrap.classList.toggle("vb-run", e.isIntersecting);   // pause art off screen
+      }
+    }, {threshold:0.15, rootMargin:"0px 0px -6% 0px"});
+    io.observe(wrap);
+
+    // safety net: if it is already on screen, or anything above misfires, show it
+    setTimeout(function(){
+      var r = wrap.getBoundingClientRect();
+      if (r.top < (window.innerHeight || 0)) wrap.classList.add("vb-in","vb-run");
+    }, 1200);
+  }catch(err){
+    var w = document.querySelector(".vb-wrap");
+    if (w) w.classList.add("vb-in","vb-run");
+  }
+})();
+</script>
+
+
+
+
+   
   <footer class="mono">
     <span>Khaled Ali Ahmed — machine vision, Windsor</span>
     <span>Line 01 · still running</span>

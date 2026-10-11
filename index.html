@@ -1433,6 +1433,7 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
   transition:opacity .65s ease,transform .65s cubic-bezier(.2,.75,.3,1)}
 [data-vb-anim].vb-in .vb-note,[data-vb-anim].vb-in .vb-card{opacity:1;transform:none}
 [data-vb-anim].vb-in .vb-card{transition-delay:.1s}
+[data-vb-anim].vb-in .vb-card + .vb-card{transition-delay:.25s}
 
 /* artwork motion: runs only while the section is on screen */
 .vb-scan{animation:vb-scan 2.6s ease-in-out infinite}
@@ -1441,18 +1442,20 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
 @keyframes vb-box{0%,44%{opacity:0}46%,88%{opacity:1}89%,100%{opacity:0}}
 .vb-beam{animation:vb-beam 2.6s ease-in-out infinite}
 @keyframes vb-beam{0%,100%{opacity:.12}50%{opacity:.42}}
+.gw-drift{animation:gw-drift 3.4s ease-in-out infinite}
+@keyframes gw-drift{0%,100%{transform:translateX(-4px)}50%{transform:translateX(9px)}}
 .vb-wrap:not(.vb-run) .vb-art *{animation-play-state:paused}
 
 @media (prefers-reduced-motion:reduce){
   .vb-card{transition:none}
   [data-vb-anim] .vb-note,[data-vb-anim] .vb-card{opacity:1;transform:none;transition:none}
-  .vb-scan,.vb-box,.vb-beam{animation:none}
+  .vb-scan,.vb-box,.vb-beam,.gw-drift{animation:none}
   .vb-box{opacity:1}
 }
 </style>
 
 <div class="vb-wrap">
-  <div class="vb-note">One more thing — a bench you can actually try.</div>
+  <div class="vb-note">Two more things — tools you can actually try.</div>
 
   <!-- set href to wherever the file lives, e.g. "vision-bench.html" or a full URL -->
   <a class="vb-card" href="vision-bench.html">
@@ -1483,6 +1486,35 @@ footer{border-top:3px solid var(--ink);margin-top:clamp(46px,7vh,90px);padding:1
     </div>
 
     <span class="vb-go">Open the bench</span>
+  </a>
+
+  <a class="vb-card" href="gaugewise.html">
+    <svg class="vb-art" viewBox="0 0 100 100" role="img"
+         aria-label="Drawing of a process spread sitting between two spec limits">
+      <g fill="none" stroke="var(--ink,#15120F)" stroke-width="3">
+        <path d="M8 82 H92"/>
+        <path d="M20 22 V82 M80 22 V82" stroke="#BC3527" stroke-width="2.6" stroke-dasharray="5 4"/>
+        <path d="M20 22 h-6 M80 22 h6" stroke="#BC3527" stroke-width="2.6"/>
+        <g class="gw-drift">
+          <rect x="35" y="72" width="6" height="10" fill="var(--paper,#F2EDE3)" stroke-width="2.2"/>
+          <rect x="41" y="58" width="6" height="24" fill="var(--paper,#F2EDE3)" stroke-width="2.2"/>
+          <rect x="47" y="44" width="6" height="38" fill="var(--paper,#F2EDE3)" stroke-width="2.2"/>
+          <rect x="53" y="58" width="6" height="24" fill="var(--paper,#F2EDE3)" stroke-width="2.2"/>
+          <rect x="59" y="72" width="6" height="10" fill="var(--paper,#F2EDE3)" stroke-width="2.2"/>
+          <path d="M26 82 C38 82 41 36 50 36 C59 36 62 82 74 82"/>
+          <path d="M50 30 V88" stroke="var(--cyan,#0D7A8B)" stroke-width="2.4"/>
+        </g>
+      </g>
+    </svg>
+
+    <div>
+      <div class="vb-kicker">Side project · runs in the browser</div>
+      <h3>Khaled&rsquo;s Gaugewise</h3>
+      <p>Measurement studies without the statistics degree. Paste your readings, type the drawing spec, and get a clear pass or fail for Type 1, linearity, Gage R&amp;R, attribute agreement, control charts and Cpk, with report-style graphs, a plain-English explanation of every number, and a sign-off-ready PDF.</p>
+      <div class="vb-tags"><span>Gage R&amp;R</span><span>Capability</span><span>Attribute agreement</span><span>PDF reports</span></div>
+    </div>
+
+    <span class="vb-go">Open Gaugewise</span>
   </a>
 </div>
 
